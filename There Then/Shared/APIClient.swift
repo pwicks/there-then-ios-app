@@ -7,6 +7,14 @@
 import Foundation
 import Combine
 
+// Protocol to allow injection for testing
+protocol APIClientProtocol {
+    func hasValidAuthToken() -> Bool
+    func createGeographicArea(name: String?, geometryWkt: String, startYear: Int, endYear: Int, startMonth: Int?, endMonth: Int?, userId: String?) -> AnyPublisher<GeographicArea, Error>
+    func getAllAreas() -> AnyPublisher<[GeographicArea], Error>
+    func searchAreasByTime(startYear: Int?, endYear: Int?, startMonth: Int?, endMonth: Int?) -> AnyPublisher<[GeographicArea], Error>
+}
+
 class APIClient: ObservableObject {
     static let shared = APIClient()
 
@@ -18,6 +26,14 @@ class APIClient: ObservableObject {
     // MARK: - Authentication
     func setAuthToken(_ token: String) {
         self.authToken = token
+    }
+
+    func hasValidAuthToken() -> Bool {
+        return authToken != nil && !authToken!.isEmpty
+    }
+
+    func clearAuthToken() {
+        self.authToken = nil
     }
 
     func login(email: String, password: String) -> AnyPublisher<LoginResponse, Error> {
@@ -70,6 +86,9 @@ class APIClient: ObservableObject {
                     throw APIError.serverError("Invalid response")
                 }
                 guard (200...299).contains(httpResponse.statusCode) else {
+                    if httpResponse.statusCode == 401 {
+                        throw APIError.serverError("Authentication required. Please log in again.")
+                    }
                     if let serverError = try? decoder.decode(ErrorResponse.self, from: output.data) {
                         throw APIError.serverError(serverError.error)
                     }
@@ -176,6 +195,8 @@ class APIClient: ObservableObject {
 
     func getAllAreas() -> AnyPublisher<[GeographicArea], Error> {
         return makeRequest("/areas/")
+            .map { (response: APIResponse<GeographicArea>) in response.results }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Channels
@@ -300,3 +321,6 @@ enum APIError: Error, LocalizedError {
         }
     }
 }
+
+// Make APIClient conform to the protocol for production usage
+extension APIClient: APIClientProtocol {}

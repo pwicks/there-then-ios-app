@@ -214,6 +214,13 @@ struct TimePeriod {
     let startMonth: Int?
     let endMonth: Int?
 
+    init(startYear: Int, endYear: Int, startMonth: Int? = nil, endMonth: Int? = nil) {
+        self.startYear = startYear
+        self.endYear = endYear
+        self.startMonth = startMonth
+        self.endMonth = endMonth
+    }
+
     var displayText: String {
         if let startMonth = startMonth, let endMonth = endMonth {
             return "\(startMonth)/\(startYear) - \(endMonth)/\(endYear)"
