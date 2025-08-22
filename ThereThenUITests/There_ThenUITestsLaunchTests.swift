@@ -1,6 +1,6 @@
 //
 //  There_ThenUITestsLaunchTests.swift
-//  There ThenUITests
+//  ThereThenUITests
 //
 //  Created by Paul Wicks on 8/13/25.
 //

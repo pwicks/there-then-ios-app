@@ -1,9 +1,9 @@
 //
 //  MapView.swift
-//  There Then
+//  ThereThen
 //
 //  MapView.swift
-//  There Then
+//  ThereThen
 //
 //  Cleaned by assistant to remove duplicated top-level code and stray statements
 //

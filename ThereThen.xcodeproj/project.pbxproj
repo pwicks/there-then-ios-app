@@ -12,50 +12,50 @@
 			containerPortal = 69A79B142E4D320F004257D0 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 69A79B1B2E4D320F004257D0;
-			remoteInfo = "There Then";
+			remoteInfo = "ThereThen";
 		};
 		69A79B382E4D3210004257D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 69A79B142E4D320F004257D0 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 69A79B1B2E4D320F004257D0;
-			remoteInfo = "There Then";
+			remoteInfo = "ThereThen";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		69A79B1C2E4D320F004257D0 /* There Then.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "There Then.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		69A79B2D2E4D3210004257D0 /* There ThenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "There ThenTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		69A79B372E4D3210004257D0 /* There ThenUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "There ThenUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69A79B1C2E4D320F004257D0 /* ThereThen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ThereThen.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69A79B2D2E4D3210004257D0 /* ThereThenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ThereThenTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69A79B372E4D3210004257D0 /* ThereThenUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ThereThenUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		69A79B3F2E4D3210004257D0 /* Exceptions for "There Then" folder in "There Then" target */ = {
+		69A79B3F2E4D3210004257D0 /* Exceptions for "ThereThen" folder in "ThereThen" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 69A79B1B2E4D320F004257D0 /* There Then */;
+			target = 69A79B1B2E4D320F004257D0 /* ThereThen */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		69A79B1E2E4D320F004257D0 /* There Then */ = {
+		69A79B1E2E4D320F004257D0 /* ThereThen */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				69A79B3F2E4D3210004257D0 /* Exceptions for "There Then" folder in "There Then" target */,
+				69A79B3F2E4D3210004257D0 /* Exceptions for "ThereThen" folder in "ThereThen" target */,
 			);
-			path = "There Then";
+			path = "ThereThen";
 			sourceTree = "<group>";
 		};
-		69A79B302E4D3210004257D0 /* There ThenTests */ = {
+		69A79B302E4D3210004257D0 /* ThereThenTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "There ThenTests";
+			path = "ThereThenTests";
 			sourceTree = "<group>";
 		};
-		69A79B3A2E4D3210004257D0 /* There ThenUITests */ = {
+		69A79B3A2E4D3210004257D0 /* ThereThenUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "There ThenUITests";
+			path = "ThereThenUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +88,9 @@
 		69A79B132E4D320F004257D0 = {
 			isa = PBXGroup;
 			children = (
-				69A79B1E2E4D320F004257D0 /* There Then */,
-				69A79B302E4D3210004257D0 /* There ThenTests */,
-				69A79B3A2E4D3210004257D0 /* There ThenUITests */,
+				69A79B1E2E4D320F004257D0 /* ThereThen */,
+				69A79B302E4D3210004257D0 /* ThereThenTests */,
+				69A79B3A2E4D3210004257D0 /* ThereThenUITests */,
 				69A79B1D2E4D320F004257D0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,9 +98,9 @@
 		69A79B1D2E4D320F004257D0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				69A79B1C2E4D320F004257D0 /* There Then.app */,
-				69A79B2D2E4D3210004257D0 /* There ThenTests.xctest */,
-				69A79B372E4D3210004257D0 /* There ThenUITests.xctest */,
+				69A79B1C2E4D320F004257D0 /* ThereThen.app */,
+				69A79B2D2E4D3210004257D0 /* ThereThenTests.xctest */,
+				69A79B372E4D3210004257D0 /* ThereThenUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,9 +108,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		69A79B1B2E4D320F004257D0 /* There Then */ = {
+		69A79B1B2E4D320F004257D0 /* ThereThen */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 69A79B402E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There Then" */;
+			buildConfigurationList = 69A79B402E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThen" */;
 			buildPhases = (
 				69A79B182E4D320F004257D0 /* Sources */,
 				69A79B192E4D320F004257D0 /* Frameworks */,
@@ -121,18 +121,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				69A79B1E2E4D320F004257D0 /* There Then */,
+				69A79B1E2E4D320F004257D0 /* ThereThen */,
 			);
-			name = "There Then";
+			name = "ThereThen";
 			packageProductDependencies = (
 			);
-			productName = "There Then";
-			productReference = 69A79B1C2E4D320F004257D0 /* There Then.app */;
+			productName = "ThereThen";
+			productReference = 69A79B1C2E4D320F004257D0 /* ThereThen.app */;
 			productType = "com.apple.product-type.application";
 		};
-		69A79B2C2E4D3210004257D0 /* There ThenTests */ = {
+		69A79B2C2E4D3210004257D0 /* ThereThenTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 69A79B452E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There ThenTests" */;
+			buildConfigurationList = 69A79B452E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThenTests" */;
 			buildPhases = (
 				69A79B292E4D3210004257D0 /* Sources */,
 				69A79B2A2E4D3210004257D0 /* Frameworks */,
@@ -144,18 +144,18 @@
 				69A79B2F2E4D3210004257D0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				69A79B302E4D3210004257D0 /* There ThenTests */,
+				69A79B302E4D3210004257D0 /* ThereThenTests */,
 			);
-			name = "There ThenTests";
+			name = "ThereThenTests";
 			packageProductDependencies = (
 			);
-			productName = "There ThenTests";
-			productReference = 69A79B2D2E4D3210004257D0 /* There ThenTests.xctest */;
+			productName = "ThereThenTests";
+			productReference = 69A79B2D2E4D3210004257D0 /* ThereThenTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		69A79B362E4D3210004257D0 /* There ThenUITests */ = {
+		69A79B362E4D3210004257D0 /* ThereThenUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 69A79B482E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There ThenUITests" */;
+			buildConfigurationList = 69A79B482E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThenUITests" */;
 			buildPhases = (
 				69A79B332E4D3210004257D0 /* Sources */,
 				69A79B342E4D3210004257D0 /* Frameworks */,
@@ -167,13 +167,13 @@
 				69A79B392E4D3210004257D0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				69A79B3A2E4D3210004257D0 /* There ThenUITests */,
+				69A79B3A2E4D3210004257D0 /* ThereThenUITests */,
 			);
-			name = "There ThenUITests";
+			name = "ThereThenUITests";
 			packageProductDependencies = (
 			);
-			productName = "There ThenUITests";
-			productReference = 69A79B372E4D3210004257D0 /* There ThenUITests.xctest */;
+			productName = "ThereThenUITests";
+			productReference = 69A79B372E4D3210004257D0 /* ThereThenUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -199,7 +199,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 69A79B172E4D320F004257D0 /* Build configuration list for PBXProject "There Then" */;
+			buildConfigurationList = 69A79B172E4D320F004257D0 /* Build configuration list for PBXProject "ThereThen" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -213,9 +213,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				69A79B1B2E4D320F004257D0 /* There Then */,
-				69A79B2C2E4D3210004257D0 /* There ThenTests */,
-				69A79B362E4D3210004257D0 /* There ThenUITests */,
+				69A79B1B2E4D320F004257D0 /* ThereThen */,
+				69A79B2C2E4D3210004257D0 /* ThereThenTests */,
+				69A79B362E4D3210004257D0 /* ThereThenUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -271,12 +271,12 @@
 /* Begin PBXTargetDependency section */
 		69A79B2F2E4D3210004257D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 69A79B1B2E4D320F004257D0 /* There Then */;
+			target = 69A79B1B2E4D320F004257D0 /* ThereThen */;
 			targetProxy = 69A79B2E2E4D3210004257D0 /* PBXContainerItemProxy */;
 		};
 		69A79B392E4D3210004257D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 69A79B1B2E4D320F004257D0 /* There Then */;
+			target = 69A79B1B2E4D320F004257D0 /* ThereThen */;
 			targetProxy = 69A79B382E4D3210004257D0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -287,13 +287,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "There Then/There_Then.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "ThereThen/There_Then.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UQ4ST8L853;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "There Then/Info.plist";
+				INFOPLIST_FILE = "ThereThen/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -317,13 +317,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "There Then/There_Then.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "ThereThen/There_Then.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UQ4ST8L853;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "There Then/Info.plist";
+				INFOPLIST_FILE = "ThereThen/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -478,7 +478,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/There Then.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/There Then";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ThereThen.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ThereThen";
 			};
 			name = Debug;
 		};
@@ -497,7 +497,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/There Then.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/There Then";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ThereThen.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ThereThen";
 			};
 			name = Release;
 		};
@@ -514,7 +514,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "There Then";
+				TEST_TARGET_NAME = "ThereThen";
 			};
 			name = Debug;
 		};
@@ -531,14 +531,14 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "There Then";
+				TEST_TARGET_NAME = "ThereThen";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		69A79B172E4D320F004257D0 /* Build configuration list for PBXProject "There Then" */ = {
+		69A79B172E4D320F004257D0 /* Build configuration list for PBXProject "ThereThen" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				69A79B432E4D3210004257D0 /* Debug */,
@@ -547,7 +547,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		69A79B402E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There Then" */ = {
+		69A79B402E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThen" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				69A79B412E4D3210004257D0 /* Debug */,
@@ -556,7 +556,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		69A79B452E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There ThenTests" */ = {
+		69A79B452E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThenTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				69A79B462E4D3210004257D0 /* Debug */,
@@ -565,7 +565,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		69A79B482E4D3210004257D0 /* Build configuration list for PBXNativeTarget "There ThenUITests" */ = {
+		69A79B482E4D3210004257D0 /* Build configuration list for PBXNativeTarget "ThereThenUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				69A79B492E4D3210004257D0 /* Debug */,
