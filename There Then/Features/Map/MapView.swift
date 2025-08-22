@@ -448,9 +448,14 @@ struct MapView: View {
         }
     }
 
-    private var mapContent: some View {
-    // Use the legacy annotationItems API for now to ensure the project builds.
-    MapContent_Legacy(region: $locationManager.region, viewModel: viewModel)
+    private var mapContent: AnyView {
+        // Return an erased view so the two branches (different concrete types)
+        // compile cleanly. iOS17 content is isolated to its own file.
+        if #available(iOS 17.0, *) {
+            return AnyView(MapContent_iOS17(region: $locationManager.region, areas: viewModel.allAreas, coordinateFor: viewModel.getAreaCenter(_:)))
+        } else {
+            return AnyView(MapContent_Legacy(region: $locationManager.region, viewModel: viewModel))
+        }
     }
 
     private var controlsView: some View {
@@ -523,6 +528,28 @@ struct MapView: View {
                 }
 
                 controlsView
+
+                // Hidden debug label for UI tests to read drawn rectangles count
+                Text("drawn: \(viewModel.drawnRectangles.count)")
+                    .accessibilityIdentifier("drawnRectanglesCount")
+                    .opacity(0)
+
+                // Place a nearly-transparent, tappable debug button top-left so XCTest can reliably reach it
+                VStack {
+                    HStack {
+                        #if DEBUG
+                        Button(action: { viewModel.mapMode = .draw }) {
+                            Text("UITest Enable Draw Mode")
+                        }
+                        .accessibilityIdentifier("UITest_EnableDrawMode")
+                        // Make it effectively invisible to humans but hittable by automation
+                        .opacity(0.01)
+                        #endif
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .padding(8)
             }
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
@@ -546,6 +573,18 @@ struct MapView: View {
             .onAppear {
                 locationManager.requestLocation()
                 viewModel.loadAllAreas()
+                #if DEBUG
+                // If running UI tests and a preset draw rect is requested, inject one so tests can assert easily
+                if ProcessInfo.processInfo.environment["UITEST_PRESET_DRAW_RECT"] == "1" {
+                    let center = locationManager.region.center
+                    let offsetLat = (locationManager.region.span.latitudeDelta * 0.1)
+                    let offsetLon = (locationManager.region.span.longitudeDelta * 0.1)
+                    let topLeft = CLLocationCoordinate2D(latitude: center.latitude + offsetLat, longitude: center.longitude - offsetLon)
+                    let bottomRight = CLLocationCoordinate2D(latitude: center.latitude - offsetLat, longitude: center.longitude + offsetLon)
+                    let rect = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
+                    viewModel.drawnRectangles.append(rect)
+                }
+                #endif
             }
         }
     }

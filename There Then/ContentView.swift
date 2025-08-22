@@ -162,6 +162,9 @@ struct AuthenticationView: View {
             }
             .navigationBarHidden(true)
         }
+        .onAppear {
+            // No-op here; AuthenticationView will handle auto-login via launchEnvironment
+        }
     }
 
     private var isFormValid: Bool {
