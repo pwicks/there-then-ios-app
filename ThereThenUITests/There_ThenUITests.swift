@@ -30,25 +30,26 @@ final class ThereThenUITests: XCTestCase {
     @MainActor
     func testLoginAndDraw() throws {
         let app = XCUIApplication()
-        // Accept credentials via launchEnvironment; skip if not provided
         let env = ProcessInfo.processInfo.environment
-        try XCTSkipIf((env["UITEST_EMAIL"] ?? "").isEmpty || (env["UITEST_PASSWORD"] ?? "").isEmpty,
-                    "UITEST_EMAIL/UITEST_PASSWORD not provided; skipping login-dependent UI flow")
-        app.launchEnvironment["UITEST_EMAIL"] = env["UITEST_EMAIL"]
-        app.launchEnvironment["UITEST_PASSWORD"] = env["UITEST_PASSWORD"]
-        // Deterministic test hook: have the app inject a preset drawn rectangle on launch
-        app.launchEnvironment["UITEST_PRESET_DRAW_RECT"] = "1"
+        guard let email = env["UITEST_EMAIL"], !email.isEmpty,
+                    let password = env["UITEST_PASSWORD"], !password.isEmpty else {
+                throw XCTSkip("UITEST_EMAIL/UITEST_PASSWORD not provided; skipping login-dependent UI flow")
+        }
+        app.launchEnvironment["UITEST_EMAIL"] = email
+        app.launchEnvironment["UITEST_PASSWORD"] = password
+        // Use launchArguments for preset draw-rect flag
+        app.launchArguments.append("-UITEST_PRESET_DRAW_RECT")
         app.launch()
 
         // If authentication view is showing, fill in fields
         let emailField = app.textFields["Email"]
         if emailField.exists {
             emailField.tap()
-            emailField.typeText(app.launchEnvironment["UITEST_EMAIL"] ?? "")
+            emailField.typeText(email)
 
             let passwordField = app.secureTextFields["Password"]
             passwordField.tap()
-            passwordField.typeText(app.launchEnvironment["UITEST_PASSWORD"] ?? "")
+            passwordField.typeText(password)
 
             app.buttons["Sign In"].tap()
         }
@@ -62,21 +63,18 @@ final class ThereThenUITests: XCTestCase {
         // Toggle 'Draw' mode via segmented control if needed
 
         // Find the 'Create Area' button (it appears only in draw mode). If not present, try tapping the segmented control to change mode.
-        let createAreaButton = app.buttons["Create Area"]
+        let createAreaButton = app.buttons["CreateAreaButton"]
         if !createAreaButton.waitForExistence(timeout: 1.5) {
-            // Preferred: explicit ID for “Draw” segment (e.g., "MapMode.Draw")
+            let picker = app.segmentedControls["MapModePicker"]
             let drawSegment = app.buttons["MapMode.Draw"]
             if drawSegment.exists {
                 drawSegment.tap()
-            } else {
-                // Fallback: tap by label to avoid index fragility
-                let picker = app.segmentedControls.firstMatch
-                if picker.exists {
-                    if picker.buttons["Draw"].exists {
-                        picker.buttons["Draw"].tap()
-                    } else if picker.buttons.count > 1 {
-                        picker.buttons.element(boundBy: 1).tap()
-                    }
+            } else if picker.exists {
+                if picker.buttons["MapMode.Draw"].exists {
+                    picker.buttons["MapMode.Draw"].tap()
+                } else if picker.buttons.count > 1 {
+                    picker.buttons.element(boundBy: 1).tap()
+                }
                 }
             }
         }

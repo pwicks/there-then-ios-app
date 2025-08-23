@@ -471,9 +471,11 @@ struct MapView: View {
                 Picker("Map Mode", selection: $viewModel.mapMode) {
                     Image(systemName: "eye").tag(MapMode.view)
                     Image(systemName: "pencil").tag(MapMode.draw)
+                        .accessibilityIdentifier("MapMode.Draw")
                     Image(systemName: "hand.tap").tag(MapMode.select)
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("MapModePicker")
                 .frame(width: 150)
                 .background(Color.white.opacity(0.9))
                 .cornerRadius(8)
@@ -498,6 +500,11 @@ struct MapView: View {
                     Button("Clear All") {
                         viewModel.drawnRectangles.removeAll()
                         viewModel.allAreas.removeAll()
+                    }
+                    Button("Create Area") {
+                        viewModel.createAreaFromDrawnRectangles()
+                    }
+                    .accessibilityIdentifier("CreateAreaButton")
                     }
                     .buttonStyle(.bordered)
                     Spacer()
@@ -581,7 +588,7 @@ struct MapView: View {
                 viewModel.loadAllAreas()
                 #if DEBUG
                 // If running UI tests and a preset draw rect is requested, inject one so tests can assert easily
-                if ProcessInfo.processInfo.environment["UITEST_PRESET_DRAW_RECT"] == "1" {
+                if ProcessInfo.processInfo.arguments.contains("-UITEST_PRESET_DRAW_RECT") {
                     let center = locationManager.region.center
                     let offsetLat = (locationManager.region.span.latitudeDelta * 0.1)
                     let offsetLon = (locationManager.region.span.longitudeDelta * 0.1)
