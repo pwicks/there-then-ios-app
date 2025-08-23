@@ -195,18 +195,16 @@ struct DrawingOverlay: View {
     @State private var isDrawing = false
     @State private var startPoint: CGPoint?
     @State private var currentPoint: CGPoint?
-    private var screenRectangles: [CGRect] {
-        drawnRectangles.map { rect in
-            // Convert geographic coordinates back to screen coordinates
-            coordinateToScreenRect(rect, geometry: geometry)
-        }
-    }
 
     var body: some View {
         GeometryReader { geometry in
+            let screenRectangles = drawnRectangles.map { rect in
+                coordinateToScreenRect(region: region, size: geometry.size, mapRect: rect)
+            }
+
             ZStack {
                 Color.clear
-                ForEach(screenRectangles, id: \.self) { rect in
+                ForEach(Array(screenRectangles.enumerated()), id: \.offset) { index, rect in
                     Rectangle()
                         .stroke(Color.blue, lineWidth: 2)
                         .background(Color.blue.opacity(0.1))
@@ -222,8 +220,8 @@ struct DrawingOverlay: View {
                         .position(x: rect.midX, y: rect.midY)
                 }
             }
-            .gesture(dragGesture(geometry: geometry))
-            .simultaneousGesture(TapGesture().onEnded { _ in })  // Block map gestures
+            .contentShape(Rectangle())
+            .highPriorityGesture(dragGesture(geometry: geometry))
             .ignoresSafeArea()
         }
     }
@@ -242,18 +240,11 @@ struct DrawingOverlay: View {
                 if let start = startPoint {
                     let end = value.location
                     let rect = CGRect(x: min(start.x, end.x), y: min(start.y, end.y), width: abs(end.x - start.x), height: abs(end.y - start.y))
-                    screenRectangles.append(rect)
 
                     let topLeft = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
                     let bottomRight = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
                     let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
                     onRectangleComplete(rectangle)
-                    // MARK: - Testable Helper
-                    fileprivate func pointToCoordinate(region: MKCoordinateRegion, size: CGSize, point: CGPoint) -> CLLocationCoordinate2D {
-                        let lat = region.center.latitude - region.span.latitudeDelta * (point.y / size.height - 0.5)
-                        let lon = region.center.longitude + region.span.longitudeDelta * (point.x / size.width - 0.5)
-                        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                    }
                 }
                 isDrawing = false
                 startPoint = nil
@@ -261,6 +252,31 @@ struct DrawingOverlay: View {
             }
         }
     }
+}
+
+// MARK: - Testable Helpers
+
+func pointToCoordinate(region: MKCoordinateRegion, size: CGSize, point: CGPoint) -> CLLocationCoordinate2D {
+    let lat = region.center.latitude - region.span.latitudeDelta * (point.y / size.height - 0.5)
+    let lon = region.center.longitude + region.span.longitudeDelta * (point.x / size.width - 0.5)
+    return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+}
+
+func coordinateToPoint(region: MKCoordinateRegion, size: CGSize, coordinate: CLLocationCoordinate2D) -> CGPoint {
+    let x = (coordinate.longitude - region.center.longitude + region.span.longitudeDelta * 0.5) / region.span.longitudeDelta * size.width
+    let y = (region.center.latitude - coordinate.latitude + region.span.latitudeDelta * 0.5) / region.span.latitudeDelta * size.height
+    return CGPoint(x: x, y: y)
+}
+
+func coordinateToScreenRect(region: MKCoordinateRegion, size: CGSize, mapRect: MapRectangle) -> CGRect {
+    let topLeftPoint = coordinateToPoint(region: region, size: size, coordinate: mapRect.topLeft)
+    let bottomRightPoint = coordinateToPoint(region: region, size: size, coordinate: mapRect.bottomRight)
+    return CGRect(
+        x: min(topLeftPoint.x, bottomRightPoint.x),
+        y: min(topLeftPoint.y, bottomRightPoint.y),
+        width: abs(bottomRightPoint.x - topLeftPoint.x),
+        height: abs(bottomRightPoint.y - topLeftPoint.y)
+    )
 }
 
 // MARK: - Area Annotation View

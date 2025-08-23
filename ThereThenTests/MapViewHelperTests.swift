@@ -35,4 +35,22 @@ final class MapViewHelperTests: XCTestCase {
         XCTAssertEqual(coord.latitude, expectedLat, accuracy: epsilon)
         XCTAssertEqual(coord.longitude, expectedLon, accuracy: epsilon)
     }
+
+    func testCoordinateToPointRoundTrip() {
+        let originalCoord = CLLocationCoordinate2D(latitude: 37.5, longitude: -121.5)
+        let point = coordinateToPoint(region: region, size: size, coordinate: originalCoord)
+        let backToCoord = pointToCoordinate(region: region, size: size, point: point)
+        XCTAssertEqual(backToCoord.latitude, originalCoord.latitude, accuracy: epsilon)
+        XCTAssertEqual(backToCoord.longitude, originalCoord.longitude, accuracy: epsilon)
+    }
+
+    func testCoordinateToScreenRect() {
+        let mapRect = MapRectangle(
+            topLeft: CLLocationCoordinate2D(latitude: 37.5, longitude: -121.5),
+            bottomRight: CLLocationCoordinate2D(latitude: 36.5, longitude: -120.5)
+        )
+        let screenRect = coordinateToScreenRect(region: region, size: size, mapRect: mapRect)
+        XCTAssertGreaterThan(screenRect.width, 0)
+        XCTAssertGreaterThan(screenRect.height, 0)
+    }
 }
