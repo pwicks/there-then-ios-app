@@ -204,7 +204,7 @@ struct DrawingOverlay: View {
 
             ZStack {
                 Color.clear
-                ForEach(Array(screenRectangles.enumerated()), id: \.offset) { index, rect in
+                ForEach(Array(screenRectangles.enumerated()), id: \.offset) { _, rect in
                     Rectangle()
                         .stroke(Color.blue, lineWidth: 2)
                         .background(Color.blue.opacity(0.1))
@@ -236,16 +236,24 @@ struct DrawingOverlay: View {
                 currentPoint = value.location
             }
             .onEnded { value in
-                // No need for DispatchQueue.main.async here
                 if let start = startPoint {
                     let end = value.location
-                    let rect = CGRect(x: min(start.x, end.x), y: min(start.y, end.y), width: abs(end.x - start.x), height: abs(end.y - start.y))
-
-                    let topLeft = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
-                    let bottomRight = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
+                    let width = abs(end.x - start.x)
+                    let height = abs(end.y - start.y)
+                    // Ignore tiny rectangles (tap jitter, accidental drags)
+                    guard width >= 5, height >= 5 else {
+                        isDrawing = false
+                        startPoint = nil
+                        currentPoint = nil
+                        return
+                    }
+                    let topLeft = pointToCoordinate(region: region, size: geometry.size,
+                                                    point: CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
+                    let bottomRight = pointToCoordinate(region: region, size: geometry.size,
+                                                        point: CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
                     let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
                     onRectangleComplete(rectangle)
-                }
+                 }
                 isDrawing = false
                 startPoint = nil
                 currentPoint = nil
@@ -517,22 +525,11 @@ struct MapView: View {
                         viewModel.drawnRectangles.removeAll()
                         viewModel.allAreas.removeAll()
                     }
-                    Button("Create Area") {
-                        viewModel.createAreaFromDrawnRectangles()
-                    }
-                    .accessibilityIdentifier("CreateAreaButton")
-                    }
-                    .buttonStyle(.bordered)
                     Spacer()
-                    Button("Test Area") {
-                        let test = GeographicArea(id: UUID().uuidString, name: "Test", geometryWkt: nil, startYear: 2020, endYear: 2024, startMonth: nil, endMonth: nil, createdBy: nil, createdAt: nil)
-                        viewModel.allAreas.append(test)
-                    }
-                    .buttonStyle(.bordered)
-
                     Button("Create Area") {
                         viewModel.createGeographicArea()
                     }
+                    .accessibilityIdentifier("CreateAreaButton")
                     .buttonStyle(.borderedProminent)
                     .disabled(viewModel.drawnRectangles.isEmpty)
                 }
