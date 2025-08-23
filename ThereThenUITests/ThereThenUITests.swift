@@ -43,13 +43,14 @@ final class ThereThenUITests: XCTestCase {
 
         // If authentication view is showing, fill in fields
         let emailField = app.textFields["Email"]
-        if emailField.exists {
+        if emailField.waitForExistence(timeout: 3) {
             emailField.tap()
-            emailField.typeText(email)
+            emailField.clearAndTypeText(email)
 
             let passwordField = app.secureTextFields["Password"]
+            XCTAssertTrue(passwordField.waitForExistence(timeout: 3), "Password field not found")
             passwordField.tap()
-            passwordField.typeText(password)
+            passwordField.clearAndTypeText(password)
 
             app.buttons["Sign In"].tap()
         }
@@ -106,7 +107,7 @@ final class ThereThenUITests: XCTestCase {
         }
 
         // Also ensure 'Create Area' exists
-        XCTAssertTrue(createAreaButton.exists, "'Create Area' should exist in draw mode")
+        XCTAssertTrue(createAreaButton.waitForExistence(timeout: 3), "'Create Area' should exist in draw mode")
         XCTAssertTrue(createAreaButton.isHittable, "'Create Area' should be visible and tappable")
     }
 

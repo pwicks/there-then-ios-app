@@ -204,10 +204,11 @@ struct DrawingOverlay: View {
 
             ZStack {
                 Color.clear
-                ForEach(Array(screenRectangles.enumerated()), id: \.offset) { _, rect in
+                ForEach(viewModel.drawnRectangles) { mapRect in
+                    let rect = coordinateToScreenRect(region: region, size: geometry.size, mapRect: mapRect)
                     Rectangle()
                         .stroke(Color.blue, lineWidth: 2)
-                        .background(Color.blue.opacity(0.1))
+                        .fill(Color.blue.opacity(0.1))
                         .frame(width: rect.width, height: rect.height)
                         .position(x: rect.midX, y: rect.midY)
                 }
@@ -248,16 +249,17 @@ struct DrawingOverlay: View {
                     let width = abs(end.x - start.x)
                     let height = abs(end.y - start.y)
                     // Ignore tiny rectangles (tap jitter, accidental drags)
-                    guard width >= 5, height >= 5 else {
+                    let minDim = max(8, min(geometry.size.width, geometry.size.height) * 0.01)
+                    guard width >= minDim, height >= minDim else {
                         isDrawing = false
                         startPoint = nil
                         currentPoint = nil
                         return
                     }
-                    let topLeft = pointToCoordinate(region: region, size: geometry.size,
-                                                    point: CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
-                    let bottomRight = pointToCoordinate(region: region, size: geometry.size,
-                                                        point: CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
+                    let tlPoint = CGPoint(x: min(start.x, end.x), y: min(start.y, end.y))
+                    let brPoint = CGPoint(x: max(start.x, end.x), y: max(start.y, end.y))
+                    let topLeft = clampedCoordinate(pointToCoordinate(region: region, size: geometry.size, point: tlPoint))
+                    let bottomRight = clampedCoordinate(pointToCoordinate(region: region, size: geometry.size, point: brPoint))
                     let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
                     onRectangleComplete(rectangle)
                  }
@@ -500,10 +502,15 @@ struct MapView: View {
             HStack {
                 Spacer()
                 Picker("Map Mode", selection: $viewModel.mapMode) {
-                    Image(systemName: "eye").tag(MapMode.view)
-                    Image(systemName: "pencil").tag(MapMode.draw)
-                        .accessibilityIdentifier("MapMode.Draw")
-                    Image(systemName: "hand.tap").tag(MapMode.select)
+                    Image(systemName: "eye")
+                        .accessibilityLabel("View")
+                        .tag(MapMode.view)
+                    Image(systemName: "pencil")
+                        .accessibilityLabel("Draw")
+                        .tag(MapMode.draw)
+                    Image(systemName: "hand.tap")
+                        .accessibilityLabel("Select")
+                        .tag(MapMode.select)
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("MapModePicker")
@@ -530,7 +537,6 @@ struct MapView: View {
                 HStack {
                     Button("Clear All") {
                         viewModel.drawnRectangles.removeAll()
-                        viewModel.allAreas.removeAll()
                     }
                     Spacer()
                     Button("Create Area") {
