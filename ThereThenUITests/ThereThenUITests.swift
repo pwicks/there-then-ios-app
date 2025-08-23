@@ -1,5 +1,5 @@
 //
-//  There_ThenUITests.swift
+//  ThereThenUITests.swift
 //  ThereThenUITests
 //
 //  Created by Paul Wicks on 8/13/25.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class There_ThenUITests: XCTestCase {
+final class ThereThenUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -24,36 +24,33 @@ final class There_ThenUITests: XCTestCase {
 
     @MainActor
     func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-    app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        throw XCTSkip("Placeholder UI test; skipped to reduce suite time.")
     }
 
     @MainActor
     func testLoginAndDraw() throws {
         let app = XCUIApplication()
-        // Accept credentials via launchEnvironment
-    let fallbackEmail = "paul.william.wicks+test1@gmail.com"
-    let fallbackPassword = "password123"
-    let emailEnv = ProcessInfo.processInfo.environment["UITEST_EMAIL"] ?? fallbackEmail
-    let passwordEnv = ProcessInfo.processInfo.environment["UITEST_PASSWORD"] ?? fallbackPassword
-    app.launchEnvironment["UITEST_EMAIL"] = emailEnv
-    app.launchEnvironment["UITEST_PASSWORD"] = passwordEnv
-    // Deterministic test hook: have the app inject a preset drawn rectangle on launch
-    app.launchEnvironment["UITEST_PRESET_DRAW_RECT"] = "1"
-    app.launch()
+        let env = ProcessInfo.processInfo.environment
+        guard let email = env["UITEST_EMAIL"], !email.isEmpty,
+                    let password = env["UITEST_PASSWORD"], !password.isEmpty else {
+                throw XCTSkip("UITEST_EMAIL/UITEST_PASSWORD not provided; skipping login-dependent UI flow")
+        }
+        app.launchEnvironment["UITEST_EMAIL"] = email
+        app.launchEnvironment["UITEST_PASSWORD"] = password
+        // Use launchArguments for preset draw-rect flag
+        app.launchArguments.append("-UITEST_PRESET_DRAW_RECT")
+        app.launch()
 
         // If authentication view is showing, fill in fields
         let emailField = app.textFields["Email"]
-        if emailField.exists {
+        if emailField.waitForExistence(timeout: 3) {
             emailField.tap()
-            emailField.typeText(app.launchEnvironment["UITEST_EMAIL"] ?? "")
+            emailField.clearAndTypeText(email)
 
             let passwordField = app.secureTextFields["Password"]
+            XCTAssertTrue(passwordField.waitForExistence(timeout: 3), "Password field not found")
             passwordField.tap()
-            passwordField.typeText(app.launchEnvironment["UITEST_PASSWORD"] ?? "")
+            passwordField.clearAndTypeText(password)
 
             app.buttons["Sign In"].tap()
         }
@@ -64,21 +61,16 @@ final class There_ThenUITests: XCTestCase {
         mapTab.tap()
 
         // Switch to draw mode using the segmented control
-        let pencilButton = app.buttons.matching(identifier: "").matching(NSPredicate(format: "label CONTAINS 'pencil' OR identifier == 'Map Mode'"))
-            .element(boundBy: 0)
-        // Fallback: tap the Map tab's view and try to open controls
-        // Instead, toggle the 'Draw' button by ensuring the Create Area button exists after tapping pencil in controls
+        // Toggle 'Draw' mode via segmented control if needed
 
         // Find the 'Create Area' button (it appears only in draw mode). If not present, try tapping the segmented control to change mode.
-        let createAreaButton = app.buttons["Create Area"]
-        if !createAreaButton.exists {
-            // Try to tap the segmented control by its accessibility label
-            let picker = app.segmentedControls.element(boundBy: 0)
-            if picker.exists {
-                // Tap middle segment (index 1)
-                let buttons = picker.buttons
-                if buttons.count > 1 { buttons.element(boundBy: 1).tap() }
+        let createAreaButton = app.buttons["CreateAreaButton"]
+        if !createAreaButton.waitForExistence(timeout: 1.5) {
+            let drawSegment = app.buttons["MapMode.Draw"]
+            if drawSegment.exists {
+                drawSegment.tap()
             }
+        }
         }
 
         // Now attempt a drag to draw a rectangle on the map
@@ -89,14 +81,10 @@ final class There_ThenUITests: XCTestCase {
         }
 
         let map = app.otherElements["Map"]
-        if map.exists {
-            let start = map.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.2))
-            let end = map.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.8))
-            start.press(forDuration: 0.1, thenDragTo: end)
-        }
-
-        // Give the app a moment to update drawn rectangles
-        sleep(1)
+        XCTAssertTrue(map.waitForExistence(timeout: 3), "Map view not found")
+        let start = map.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.2))
+        let end = map.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.8))
+        start.press(forDuration: 0.1, thenDragTo: end)
 
         // Check the hidden debug label or the Create Area button enabling
         let drawnLabel = app.staticTexts["drawnRectanglesCount"]
@@ -112,7 +100,8 @@ final class There_ThenUITests: XCTestCase {
         }
 
         // Also ensure 'Create Area' exists
-        XCTAssertTrue(createAreaButton.exists)
+        XCTAssertTrue(createAreaButton.exists, "'Create Area' should exist in draw mode")
+        XCTAssertTrue(createAreaButton.isHittable, "'Create Area' should be visible and tappable")
     }
 
     @MainActor

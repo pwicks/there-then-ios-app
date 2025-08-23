@@ -195,16 +195,18 @@ struct DrawingOverlay: View {
     @State private var isDrawing = false
     @State private var startPoint: CGPoint?
     @State private var currentPoint: CGPoint?
-    @State private var screenRectangles: [CGRect] = []
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 Color.clear
-                ForEach(screenRectangles, id: \.self) { rect in
+                ForEach(drawnRectangles) { mapRect in
+                    let rect = coordinateToScreenRect(region: region, size: geometry.size, mapRect: mapRect)
                     Rectangle()
-                        .stroke(Color.blue, lineWidth: 2)
-                        .background(Color.blue.opacity(0.1))
+                        .fill(Color.blue.opacity(0.1))
+                        .overlay(
+                            Rectangle().stroke(Color.blue, lineWidth: 2)
+                        )
                         .frame(width: rect.width, height: rect.height)
                         .position(x: rect.midX, y: rect.midY)
                 }
@@ -217,12 +219,21 @@ struct DrawingOverlay: View {
                         .position(x: rect.midX, y: rect.midY)
                 }
             }
-            .gesture(dragGesture(geometry: geometry))
+            .contentShape(Rectangle())
+            .accessibilityIdentifier("Map")
+            .highPriorityGesture(dragGesture(geometry: geometry))
             .ignoresSafeArea()
         }
     }
 
-    private func dragGesture(geometry: GeometryProxy) -> some Gesture {
+    /// Creates a drag gesture used for drawing rectangular areas on the map.
+        /// 
+        /// The gesture tracks the drag lifecycle to build a screen-space rectangle and a geographic `MapRectangle`.
+        /// Side effects: sets and clears `isDrawing`, `startPoint`, and `currentPoint`; invokes `onRectangleComplete` with the created `MapRectangle`.
+        /// - Parameters:
+        ///   - geometry: Geometry proxy of the enclosing view; its `size` is used to convert screen points to geographic coordinates.
+        /// - Returns: A gesture (`some Gesture`) that detects drag begin, updates, and end for rectangle drawing.
+        private func dragGesture(geometry: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 if !isDrawing {
@@ -232,29 +243,67 @@ struct DrawingOverlay: View {
                 currentPoint = value.location
             }
             .onEnded { value in
-                DispatchQueue.main.async {
-                    if let start = startPoint {
-                        let end = value.location
-                        let rect = CGRect(x: min(start.x, end.x), y: min(start.y, end.y), width: abs(end.x - start.x), height: abs(end.y - start.y))
-                        screenRectangles.append(rect)
-
-                        func pointToCoordinate(_ point: CGPoint) -> CLLocationCoordinate2D {
-                            let lat = region.center.latitude + region.span.latitudeDelta * (0.5 - point.y / geometry.size.height)
-                            let lon = region.center.longitude + region.span.longitudeDelta * (point.x / geometry.size.width - 0.5)
-                            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                        }
-
-                        let topLeft = pointToCoordinate(CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
-                        let bottomRight = pointToCoordinate(CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
-                        let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
-                        onRectangleComplete(rectangle)
+                if let start = startPoint {
+                    let end = value.location
+                    let width = abs(end.x - start.x)
+                    let height = abs(end.y - start.y)
+                    // Ignore tiny rectangles (tap jitter, accidental drags)
+                    let minDim = max(8, min(geometry.size.width, geometry.size.height) * 0.01)
+                    guard width >= minDim, height >= minDim else {
+                        isDrawing = false
+                        startPoint = nil
+                        currentPoint = nil
+                        return
                     }
-                    isDrawing = false
-                    startPoint = nil
-                    currentPoint = nil
-                }
+                    let tlPoint = CGPoint(x: min(start.x, end.x), y: min(start.y, end.y))
+                    let brPoint = CGPoint(x: max(start.x, end.x), y: max(start.y, end.y))
+                    
+                    // Clamp points to geometry bounds
+                    let clampedTlPoint = CGPoint(
+                        x: max(0, min(tlPoint.x, geometry.size.width)),
+                        y: max(0, min(tlPoint.y, geometry.size.height))
+                    )
+                    let clampedBrPoint = CGPoint(
+                        x: max(0, min(brPoint.x, geometry.size.width)),
+                        y: max(0, min(brPoint.y, geometry.size.height))
+                    )
+                    
+                    let topLeft = pointToCoordinate(region: region, size: geometry.size, point: clampedTlPoint)
+                    let bottomRight = pointToCoordinate(region: region, size: geometry.size, point: clampedBrPoint)
+                    let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
+                    onRectangleComplete(rectangle)
+                 }
+                isDrawing = false
+                startPoint = nil
+                currentPoint = nil
             }
+        }
     }
+}
+
+// MARK: - Testable Helpers
+
+func pointToCoordinate(region: MKCoordinateRegion, size: CGSize, point: CGPoint) -> CLLocationCoordinate2D {
+    let lat = region.center.latitude - region.span.latitudeDelta * (point.y / size.height - 0.5)
+    let lon = region.center.longitude + region.span.longitudeDelta * (point.x / size.width - 0.5)
+    return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+}
+
+func coordinateToPoint(region: MKCoordinateRegion, size: CGSize, coordinate: CLLocationCoordinate2D) -> CGPoint {
+    let x = (coordinate.longitude - region.center.longitude + region.span.longitudeDelta * 0.5) / region.span.longitudeDelta * size.width
+    let y = (region.center.latitude - coordinate.latitude + region.span.latitudeDelta * 0.5) / region.span.latitudeDelta * size.height
+    return CGPoint(x: x, y: y)
+}
+
+func coordinateToScreenRect(region: MKCoordinateRegion, size: CGSize, mapRect: MapRectangle) -> CGRect {
+    let topLeftPoint = coordinateToPoint(region: region, size: size, coordinate: mapRect.topLeft)
+    let bottomRightPoint = coordinateToPoint(region: region, size: size, coordinate: mapRect.bottomRight)
+    return CGRect(
+        x: min(topLeftPoint.x, bottomRightPoint.x),
+        y: min(topLeftPoint.y, bottomRightPoint.y),
+        width: abs(bottomRightPoint.x - topLeftPoint.x),
+        height: abs(bottomRightPoint.y - topLeftPoint.y)
+    )
 }
 
 // MARK: - Area Annotation View
@@ -463,11 +512,21 @@ struct MapView: View {
             HStack {
                 Spacer()
                 Picker("Map Mode", selection: $viewModel.mapMode) {
-                    Image(systemName: "eye").tag(MapMode.view)
-                    Image(systemName: "pencil").tag(MapMode.draw)
-                    Image(systemName: "hand.tap").tag(MapMode.select)
+                    Image(systemName: "eye")
+                        .accessibilityLabel("View")
+                        .accessibilityIdentifier("MapMode.View")
+                        .tag(MapMode.view)
+                    Image(systemName: "pencil")
+                        .accessibilityLabel("Draw")
+                        .accessibilityIdentifier("MapMode.Draw")
+                        .tag(MapMode.draw)
+                    Image(systemName: "hand.tap")
+                        .accessibilityLabel("Select")
+                        .accessibilityIdentifier("MapMode.Select")
+                        .tag(MapMode.select)
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("MapModePicker")
                 .frame(width: 150)
                 .background(Color.white.opacity(0.9))
                 .cornerRadius(8)
@@ -491,19 +550,12 @@ struct MapView: View {
                 HStack {
                     Button("Clear All") {
                         viewModel.drawnRectangles.removeAll()
-                        viewModel.allAreas.removeAll()
                     }
-                    .buttonStyle(.bordered)
                     Spacer()
-                    Button("Test Area") {
-                        let test = GeographicArea(id: UUID().uuidString, name: "Test", geometryWkt: nil, startYear: 2020, endYear: 2024, startMonth: nil, endMonth: nil, createdBy: nil, createdAt: nil)
-                        viewModel.allAreas.append(test)
-                    }
-                    .buttonStyle(.bordered)
-
                     Button("Create Area") {
                         viewModel.createGeographicArea()
                     }
+                    .accessibilityIdentifier("CreateAreaButton")
                     .buttonStyle(.borderedProminent)
                     .disabled(viewModel.drawnRectangles.isEmpty)
                 }
@@ -575,7 +627,7 @@ struct MapView: View {
                 viewModel.loadAllAreas()
                 #if DEBUG
                 // If running UI tests and a preset draw rect is requested, inject one so tests can assert easily
-                if ProcessInfo.processInfo.environment["UITEST_PRESET_DRAW_RECT"] == "1" {
+                if ProcessInfo.processInfo.arguments.contains("-UITEST_PRESET_DRAW_RECT") {
                     let center = locationManager.region.center
                     let offsetLat = (locationManager.region.span.latitudeDelta * 0.1)
                     let offsetLon = (locationManager.region.span.longitudeDelta * 0.1)
