@@ -8,7 +8,7 @@
 import XCTest
 import Combine
 import CoreLocation
-@testable import There_Then
+@testable import ThereThen
 
 final class There_ThenTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()

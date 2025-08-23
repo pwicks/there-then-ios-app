@@ -1,6 +1,6 @@
 import XCTest
 import Combine
-@testable import There_Then
+@testable import ThereThen
 
 class SignUpTests: XCTestCase {
     func testSignUpDecoding() {
