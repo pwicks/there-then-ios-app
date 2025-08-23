@@ -198,17 +198,15 @@ struct DrawingOverlay: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let screenRectangles = drawnRectangles.map { rect in
-                coordinateToScreenRect(region: region, size: geometry.size, mapRect: rect)
-            }
-
             ZStack {
                 Color.clear
-                ForEach(viewModel.drawnRectangles) { mapRect in
+                ForEach(drawnRectangles) { mapRect in
                     let rect = coordinateToScreenRect(region: region, size: geometry.size, mapRect: mapRect)
                     Rectangle()
-                        .stroke(Color.blue, lineWidth: 2)
                         .fill(Color.blue.opacity(0.1))
+                        .overlay(
+                            Rectangle().stroke(Color.blue, lineWidth: 2)
+                        )
                         .frame(width: rect.width, height: rect.height)
                         .position(x: rect.midX, y: rect.midY)
                 }
@@ -222,6 +220,7 @@ struct DrawingOverlay: View {
                 }
             }
             .contentShape(Rectangle())
+            .accessibilityIdentifier("Map")
             .highPriorityGesture(dragGesture(geometry: geometry))
             .ignoresSafeArea()
         }
@@ -230,7 +229,7 @@ struct DrawingOverlay: View {
     /// Creates a drag gesture used for drawing rectangular areas on the map.
         /// 
         /// The gesture tracks the drag lifecycle to build a screen-space rectangle and a geographic `MapRectangle`.
-        /// Side effects: sets and clears `isDrawing`, `startPoint`, and `currentPoint`; appends the screen-space rect to `screenRectangles`; invokes `onRectangleComplete` with the created `MapRectangle`.
+        /// Side effects: sets and clears `isDrawing`, `startPoint`, and `currentPoint`; invokes `onRectangleComplete` with the created `MapRectangle`.
         /// - Parameters:
         ///   - geometry: Geometry proxy of the enclosing view; its `size` is used to convert screen points to geographic coordinates.
         /// - Returns: A gesture (`some Gesture`) that detects drag begin, updates, and end for rectangle drawing.
@@ -258,8 +257,19 @@ struct DrawingOverlay: View {
                     }
                     let tlPoint = CGPoint(x: min(start.x, end.x), y: min(start.y, end.y))
                     let brPoint = CGPoint(x: max(start.x, end.x), y: max(start.y, end.y))
-                    let topLeft = clampedCoordinate(pointToCoordinate(region: region, size: geometry.size, point: tlPoint))
-                    let bottomRight = clampedCoordinate(pointToCoordinate(region: region, size: geometry.size, point: brPoint))
+                    
+                    // Clamp points to geometry bounds
+                    let clampedTlPoint = CGPoint(
+                        x: max(0, min(tlPoint.x, geometry.size.width)),
+                        y: max(0, min(tlPoint.y, geometry.size.height))
+                    )
+                    let clampedBrPoint = CGPoint(
+                        x: max(0, min(brPoint.x, geometry.size.width)),
+                        y: max(0, min(brPoint.y, geometry.size.height))
+                    )
+                    
+                    let topLeft = pointToCoordinate(region: region, size: geometry.size, point: clampedTlPoint)
+                    let bottomRight = pointToCoordinate(region: region, size: geometry.size, point: clampedBrPoint)
                     let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
                     onRectangleComplete(rectangle)
                  }
@@ -504,12 +514,15 @@ struct MapView: View {
                 Picker("Map Mode", selection: $viewModel.mapMode) {
                     Image(systemName: "eye")
                         .accessibilityLabel("View")
+                        .accessibilityIdentifier("MapMode.View")
                         .tag(MapMode.view)
                     Image(systemName: "pencil")
                         .accessibilityLabel("Draw")
+                        .accessibilityIdentifier("MapMode.Draw")
                         .tag(MapMode.draw)
                     Image(systemName: "hand.tap")
                         .accessibilityLabel("Select")
+                        .accessibilityIdentifier("MapMode.Select")
                         .tag(MapMode.select)
                 }
                 .pickerStyle(.segmented)

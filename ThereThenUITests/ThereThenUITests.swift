@@ -66,18 +66,11 @@ final class ThereThenUITests: XCTestCase {
         // Find the 'Create Area' button (it appears only in draw mode). If not present, try tapping the segmented control to change mode.
         let createAreaButton = app.buttons["CreateAreaButton"]
         if !createAreaButton.waitForExistence(timeout: 1.5) {
-            let picker = app.segmentedControls["MapModePicker"]
             let drawSegment = app.buttons["MapMode.Draw"]
             if drawSegment.exists {
                 drawSegment.tap()
-            } else if picker.exists {
-                if picker.buttons["MapMode.Draw"].exists {
-                    picker.buttons["MapMode.Draw"].tap()
-                } else if picker.buttons.count > 1 {
-                    picker.buttons.element(boundBy: 1).tap()
-                }
-                }
             }
+        }
         }
 
         // Now attempt a drag to draw a rectangle on the map
@@ -107,7 +100,7 @@ final class ThereThenUITests: XCTestCase {
         }
 
         // Also ensure 'Create Area' exists
-        XCTAssertTrue(createAreaButton.waitForExistence(timeout: 3), "'Create Area' should exist in draw mode")
+        XCTAssertTrue(createAreaButton.exists, "'Create Area' should exist in draw mode")
         XCTAssertTrue(createAreaButton.isHittable, "'Create Area' should be visible and tappable")
     }
 
