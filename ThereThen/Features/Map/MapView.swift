@@ -195,7 +195,12 @@ struct DrawingOverlay: View {
     @State private var isDrawing = false
     @State private var startPoint: CGPoint?
     @State private var currentPoint: CGPoint?
-    @State private var screenRectangles: [CGRect] = []
+    private var screenRectangles: [CGRect] {
+        drawnRectangles.map { rect in
+            // Convert geographic coordinates back to screen coordinates
+            coordinateToScreenRect(rect, geometry: geometry)
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -218,6 +223,7 @@ struct DrawingOverlay: View {
                 }
             }
             .gesture(dragGesture(geometry: geometry))
+            .simultaneousGesture(TapGesture().onEnded { _ in })  // Block map gestures
             .ignoresSafeArea()
         }
     }
@@ -238,16 +244,16 @@ struct DrawingOverlay: View {
                     let rect = CGRect(x: min(start.x, end.x), y: min(start.y, end.y), width: abs(end.x - start.x), height: abs(end.y - start.y))
                     screenRectangles.append(rect)
 
-                    func pointToCoordinate(_ point: CGPoint) -> CLLocationCoordinate2D {
-                        let lat = region.center.latitude - region.span.latitudeDelta * (point.y / geometry.size.height - 0.5)
-                        let lon = region.center.longitude + region.span.longitudeDelta * (point.x / geometry.size.width - 0.5)
-                        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                    }
-
-                    let topLeft = pointToCoordinate(CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
-                    let bottomRight = pointToCoordinate(CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
+                    let topLeft = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: min(start.x, end.x), y: min(start.y, end.y)))
+                    let bottomRight = pointToCoordinate(region: region, size: geometry.size, point: CGPoint(x: max(start.x, end.x), y: max(start.y, end.y)))
                     let rectangle = MapRectangle(topLeft: topLeft, bottomRight: bottomRight)
                     onRectangleComplete(rectangle)
+                    // MARK: - Testable Helper
+                    fileprivate func pointToCoordinate(region: MKCoordinateRegion, size: CGSize, point: CGPoint) -> CLLocationCoordinate2D {
+                        let lat = region.center.latitude - region.span.latitudeDelta * (point.y / size.height - 0.5)
+                        let lon = region.center.longitude + region.span.longitudeDelta * (point.x / size.width - 0.5)
+                        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    }
                 }
                 isDrawing = false
                 startPoint = nil
