@@ -226,7 +226,14 @@ struct DrawingOverlay: View {
         }
     }
 
-    private func dragGesture(geometry: GeometryProxy) -> some Gesture {
+    /// Creates a drag gesture used for drawing rectangular areas on the map.
+        /// 
+        /// The gesture tracks the drag lifecycle to build a screen-space rectangle and a geographic `MapRectangle`.
+        /// Side effects: sets and clears `isDrawing`, `startPoint`, and `currentPoint`; appends the screen-space rect to `screenRectangles`; invokes `onRectangleComplete` with the created `MapRectangle`.
+        /// - Parameters:
+        ///   - geometry: Geometry proxy of the enclosing view; its `size` is used to convert screen points to geographic coordinates.
+        /// - Returns: A gesture (`some Gesture`) that detects drag begin, updates, and end for rectangle drawing.
+        private func dragGesture(geometry: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 if !isDrawing {
