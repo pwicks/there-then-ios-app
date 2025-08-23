@@ -1,5 +1,5 @@
 //
-//  There_ThenApp.swift
+//  ThereThenApp.swift
 //  ThereThen
 //
 //  Created by Paul Wicks on 8/13/25.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct There_ThenApp: App {
+struct ThereThenApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,

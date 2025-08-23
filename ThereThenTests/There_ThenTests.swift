@@ -1,5 +1,5 @@
 //
-//  There_ThenTests.swift
+//  ThereThenTests.swift
 //  ThereThenTests
 //
 //  Created by Paul Wicks on 8/13/25.
@@ -10,7 +10,7 @@ import Combine
 import CoreLocation
 @testable import ThereThen
 
-final class There_ThenTests: XCTestCase {
+final class ThereThenTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
 
     struct StubAPIClient: APIClientProtocol {

@@ -1,5 +1,5 @@
 //
-//  There_ThenUITests.swift
+//  ThereThenUITests.swift
 //  ThereThenUITests
 //
 //  Created by Paul Wicks on 8/13/25.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class There_ThenUITests: XCTestCase {
+final class ThereThenUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

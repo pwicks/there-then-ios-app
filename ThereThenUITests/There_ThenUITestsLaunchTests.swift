@@ -1,5 +1,5 @@
 //
-//  There_ThenUITestsLaunchTests.swift
+//  ThereThenUITestsLaunchTests.swift
 //  ThereThenUITests
 //
 //  Created by Paul Wicks on 8/13/25.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class There_ThenUITestsLaunchTests: XCTestCase {
+final class ThereThenUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
